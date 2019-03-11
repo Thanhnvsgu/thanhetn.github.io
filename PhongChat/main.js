@@ -1,4 +1,23 @@
-const socket = io('http://localhost:6000/')
+const socket = io('http://localhost:5000/')
+
+socket.on('Online_user', e =>{
+    document.getElementById('online_user').innerHTML=`Số lượng người online: ${e}`;
+});
+socket.on('List_online', list =>{
+    for(var i = 0 ; i < list.length;i++ ){
+        $("#list_ul").append(`<li id="li_${list[i].id}" class="list-group-item">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" class="userid" value="${list[i].id}">${list[i].name}</label>
+                                </div>
+                            </li>`);
+    };
+});
+
+socket.on('Turn_off', user =>{
+    alert(user.id);
+    $(`#li_${user.id}`).remove();
+    $.notify(`${user.id} đã offline`);
+});
 
 var peer = new Peer({ key: 'lwjd5qra8257b9' }); // tạo ra 1 peer key mới
 
@@ -7,37 +26,36 @@ peer.on('open', id => {
     // console.log(id);
     $("#my-peer").append(id);
     
-    $("#btnid").on('click',function(){
-        var conn = peer.connect($('#idnhan').val());
-        conn.on('open', function() {
-            console.log(conn.peer);
-            // Receive messages
-            conn.on('data', function(data) {
-              console.log('Received', data);
-            });
-            // Send messages
-            conn.send('Hello1!');
-    
-        });
+    $("#btnsignup").on('click',function(){
+        console.log($("#chatname").val());
+        var user = {};
+        user.name = $("#chatname").val();
+        user.id = id;
+        socket.emit('Sign_up', user);
+    });
+    socket.on('Signup_Success', e=>{
+        if(e == 1){
+            $.notify("Đăng ký tài khoản thành công!","success");
+            $("#notification").show();
+            $("#signup").hide();
+        }else{
+            $.notify("Tên người dùng đã tồn tại!");
+        }
+    });
+    socket.on('Hello_user', e=>{
+        document.getElementById('hello_user').innerHTML = `Xin chào, ${e}`;
+        document.getElementById('btnlist').disabled = false;
+    });
+    socket.on('Update_list', user => {
+        $("#list_ul").append(`<li id="li_${user.id}" class="list-group-item">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" class="userid" value="${user.id}">${user.name}</label>
+                                </div>
+                            </li>`);
     });
 
 
 
-    peer.on('connection',function(conn){
-        conn.on('open', function() {
-            console.log(conn.peer);
-            // Receive messages
-            conn.on('data', function(data) {
-              console.log('Received', data);
-            });
-          
-            // Send messages
-            
-            conn.send('Received', data);
-
-        });
-        var call = peer.call('dest-peer-id',mediaStream);
-    });
     $("#btnbatdau").on('click',function(){
 
         openStream().then(stream => {

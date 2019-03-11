@@ -10,7 +10,8 @@
 
 <body>
         <div class="col-lg-12" style="background-color: black">
-                <h5 id="my-peer" style="font-weight: bold;color: white"> Id của tôi: </h3>
+                <div class="col-lg-6"><h5 id="my-peer" style="font-weight: bold;color: white"> Id của tôi: </h3></div>
+                <div class="col-lg-6"><h5 id="hello_user" style="text-align: right;font-weight: bold; color:gold"> </h5></div>        
         </div>
         <div class="panel panel-default col-lg-12">
 
@@ -22,14 +23,18 @@
                         <div class="col-lg-6" style="text-align: right; font-weight: bold">
                                 <button class="btn btn-success" data-toggle="modal" data-target="#modal_list"
                                         id="btnlist"> Danh sách online </button>
-                                <span> Số lượng người online: </span>
+                                <span id="online_user"> Số lượng người online: </span>
                         </div>
                 </div>
         </div>
 
+        <div class="panel panel-default col-lg-12" id="notification">
+                <h3>Hãy tìm một ai đó trong danh sách để chat với bạn!</h3>
+        </div>
+
         <div id="chatarea" class="panel">
                 <div class="col-lg-12">
-                        <button id="btncall" class="btn"> Gọi </button>
+                        <!-- <button id="btncall" class="btn"> Gọi </button> -->
                         <button id="btncam" class="btn btn-info"> Tắt CAM /Bật CAM </button>
                         <button id="btnbatdau" class="btn btn-danger"> Kết thúc </button>
                 </div>
@@ -45,14 +50,13 @@
                         </div>
                 </div>
         </div>
-        <div class="signup" class="col-lg-12 panel">
+
+        <div id="signup" class="col-lg-12 panel">
                 <div class="form-inline  col-lg-6">
                         <label> Tên người dùng: </label>
-                        <input type="text" class="form-control" placeholder="Tên sử dụng khi chat" />
+                        <input type="text" id="chatname" class="form-control" placeholder="Tên sử dụng khi chat" />
                         <button class="btn btn-success" id="btnsignup">Đăng ký</button>
                 </div>
-
-
         </div>
 
         <!-- Modal -->
@@ -63,14 +67,30 @@
                         <div class="modal-content">
                                 <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Modal Header</h4>
+                                        <h4 class="modal-title">Danh sách người dùng đang online.</h4>
                                 </div>
                                 <div class="modal-body">
-                                        <p>Some text in the modal.</p>
+                                        <ul class="list-group" id="list_ul">
+                                                <!-- <li class="list-group-item">
+                                                        <div class="checkbox">
+                                                                <label><input type="checkbox" class="userid" value="a">Nguyễn Văn A</label>
+                                                        </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                        <div class="checkbox">
+                                                                <label><input type="checkbox" class="userid" value="b">Nguyễn Văn B</label>
+                                                        </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                        <div class="checkbox">
+                                                                <label><input type="checkbox" class="userid" value="c">Nguyễn Văn C</label>
+                                                        </div>
+                                                </li> -->
+                                        </ul>
                                 </div>
                                 <div class="modal-footer">
-                                        <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                                        <button type="button" id="btncall" class="btn btn-success" data-dismiss="modal">Gọi</button>
                                 </div>
                         </div>
 
@@ -83,10 +103,17 @@
 
 </body>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script src="notify.min.js"></script>
 <script src="main.js"></script>
 <script>
-        $("#btnlist").on('click', function () {
-
+        $("#notification").hide();
+        $("#chatarea").hide();
+        document.getElementById('btnlist').disabled = true;
+        $("#btncall").on('click', function () {
+                var list = document.getElementsByClassName('userid');
+                for(var i=0;i < list.length;i++){
+                        console.log(list[i].checked);
+                }
         });
 </script>
 
