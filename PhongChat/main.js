@@ -14,15 +14,15 @@ socket.on('List_online', list =>{
 });
 
 socket.on('Turn_off', user =>{
-    alert(user.id);
-    $(`#li_${user.id}`).remove();
-    $.notify(`${user.id} đã offline`);
+    console.log(user);
+    $(`#li_${user.id}`).remove(); 
+    $.notify(`${user.name} đã offline`);
 });
 
 var peer = new Peer({ key: 'lwjd5qra8257b9' }); // tạo ra 1 peer key mới
 
 peer.on('open', id => {
-
+    $("#videochat").append(`<video class="col-lg-6" id="video_${id}"> </video>`);
     // console.log(id);
     $("#my-peer").append(id);
     
@@ -38,6 +38,7 @@ peer.on('open', id => {
             $.notify("Đăng ký tài khoản thành công!","success");
             $("#notification").show();
             $("#signup").hide();
+            $("#chatarea").show();
         }else{
             $.notify("Tên người dùng đã tồn tại!");
         }
@@ -54,52 +55,51 @@ peer.on('open', id => {
                             </li>`);
     });
 
+    socket.on('New_user', user =>{
+        $.notify(`${user.name} đang online`,'success');
+    });
 
 
-    $("#btnbatdau").on('click',function(){
-
+    $("#btncall").on('click',function(){
+        
         openStream().then(stream => {
-             playStream('video1', stream);
-             const call = peer.call($('#idnhan').val(), stream);
-             call.on('stream', stream => {       
-                 console.log(stream.getVideoTracks());        
-                 playStream('video2',stream);
-             }); // Máy nhận
+            var list = document.getElementsByClassName('userid');
+            playStream(`video_${id}`, stream);
+            var call = [];
+            for(var i=0;i < list.length;i++){
+                    var ten = list[i].value;
+                    // console.log(ten);                    
+                    if(list[i].checked == true){             
+                        // console.log(list[i].value);                      
+                        $("#videochat").append(`<video class="col-lg-3" id="video_${ten}"> </video>`);
+                        call.push(peer.call(`${ten}` , stream));
+                        
+                    }
+            };
             
-            call.on('stream', function(stream2) {
-                // `stream` is the MediaStream of the remote peer.
-                // Here you'd add it to an HTML video/canvas element.
-                console.log('bắt đầu stream');
-                $("#btndung").on('click',function(){
-                    // stream.getVideoTracks()[0].play();
-                    stream.getVideoTracks()[0].stop();
+            call.forEach(e => {
+                console.log(e);
+                e.on('stream',stream =>{
+                    playStream(`video_${e.peer}`,stream);
                 });
             });
-            socket.emit('dungstream',stream);
+             
+           
+            // socket.emit('dungstream',stream);
          }); 
          
     });
     
     peer.on('call', function(call) {
-        
-
+        // alert("co nguoi goi");
+        // console.log(call);
+        $("#videochat").append(`<video class="col-lg-3" id="video_${call.peer}"> </video>`);
         openStream().then(stream => {
             call.answer(stream);             
-            playStream('video1', stream);
+            playStream(`video_${id}`, stream);
             call.on('stream', remoteStream => {                
-                playStream('video2',remoteStream);        
+                playStream(`video_${call.peer}`,remoteStream);        
             });           
-            $("#btndung").on('click',function(){
-                stream.getVideoTracks()[0].stop();
-                socket.on('truyenlai',stream2 => {
-                    console.log('truyen lai');
-                });
-            });
-            $("#btngoi").on('click',function(){
-                // stream.getVideoTracks()[0].play();
-                
-            });
-            
         });
         
     });
@@ -110,7 +110,12 @@ peer.on('open', id => {
 function openStream(){
     const config = {
         "audio": false,
-        "video": true
+        "video": {
+            "frameRate": {
+                "min": "30",
+                "max": "60"
+            }
+        }
     };
     return navigator.mediaDevices.getUserMedia(config);
 }
