@@ -1,4 +1,4 @@
-const socket = io('http://localhost:5000/')
+const socket = io('https://thanhetn.herokuapp.com/')
 
 socket.on('Online_user', e =>{
     document.getElementById('online_user').innerHTML=`Số lượng người online: ${e}`;
@@ -77,7 +77,8 @@ peer.on('open', id => {
                     var ten = list[i].value;
                     // console.log(ten);                    
                     if(list[i].checked == true){             
-                        // console.log(list[i].value);                      
+                        // console.log(list[i].value);
+                        $(`#div_${ten}`).remove();                      
                         $("#videochat").append(`<div class="col-lg-3" id="div_${ten}">                             
                         <div> <video class="col-lg-12" controls poster="https://cdn1.vectorstock.com/i/1000x1000/44/90/italy-flag-on-a-white-vector-21844490.jpg" id="video_${ten}"> </video> </div> 
                         <div id="user_video" style="text-align:center;color:#3399ff;font-weight:bold"> ${document.getElementById(`li_${ten}`).textContent} </div>
@@ -104,6 +105,7 @@ peer.on('open', id => {
     peer.on('call', function(call) {
         // alert("co nguoi goi");
         // console.log(call);
+        $(`#div_${call.peer}`).remove();
         $("#videochat").append(`<div class="col-lg-3" id = "div_${call.peer}">                             
         <div> <video class="col-lg-12" controls poster="https://cdn1.vectorstock.com/i/1000x1000/44/90/italy-flag-on-a-white-vector-21844490.jpg" id="video_${call.peer}"> </video> </div> 
         <div id="user_video" style="text-align:center;color:#3399ff;font-weight:bold"> ${document.getElementById(`li_${call.peer}`).textContent} </div>
